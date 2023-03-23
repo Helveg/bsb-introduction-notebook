@@ -1,0 +1,2 @@
+[tools.bsb]
+config = "network_configuration.json"
