@@ -1,2 +1,2 @@
 [tools.bsb]
-config = "network_configuration.json"
+config = "network_configuration.yaml"

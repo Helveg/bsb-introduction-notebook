@@ -1,0 +1,111 @@
+name: Starting example
+storage:
+  engine: hdf5
+  root: 2layer_conn.hdf5
+network:
+  x: 400
+  y: 600
+  z: 400
+regions:
+  layer_stack:
+    type: stack
+    children:
+    - base_layer
+    - top_layer
+partitions:
+  base_layer:
+    type: layer
+    thickness: 100
+  top_layer:
+    type: layer
+    thickness: 100
+    stack_index: 1
+morphologies:
+- file: morpho.swc
+  pipeline:
+  - func: rotate
+    rotation: [90, 0, 0]
+cell_types:
+  base_type:
+    spatial:
+    spatial:
+      radius: 2.5
+      density: 0.000039
+      morphologies:
+      - morpho
+    plotting:
+      display_name: Template cell
+      color: "#E62314"
+      opacity: 0.5
+  top_type:
+    spatial:
+      radius: 7
+      count: 10
+      morphologies:
+      - morpho
+placement:
+  example_placement:
+    strategy: bsb.placement.ParticlePlacement
+    cell_types:
+    - base_type
+    partitions:
+    - base_layer
+  top_placement:
+    strategy: bsb.placement.RandomPlacement
+    partitions:
+    - top_layer
+    cell_types:
+    - top_type
+connectivity: 
+  bottom_to_top:
+    strategy: bsb.connectivity.VoxelIntersection
+    presynaptic:
+      cell_types:
+      - base_type
+    postsynaptic:
+      cell_types:
+      - top_type
+simulations:
+  nest_1:
+    simulator: nest
+    resolution: 0.1
+    duration: 100.0
+    cell_models:
+      base_type:
+        neuron_model: iaf_cond_alpha
+        constants:
+          t_ref: 0.5
+          C_m: 334
+          V_th: -43
+          V_reset: -69
+          E_L: -59
+          I_e: 800
+          tau_syn_ex: 1.1
+          tau_syn_in: 2.8
+          g_L: 7.1
+      top_type:
+        neuron_model: iaf_cond_alpha
+        constants:
+          t_ref: 1.59
+          C_m: 14.6
+          V_th: -53
+          V_reset: -78
+          E_L: -68
+          I_e: 24.05
+          tau_syn_ex: 0.64
+          tau_syn_in: 2
+          g_L: 1.6
+    connection_models:
+      bottom_to_top:
+        synapse:
+          weight: 0.5
+          delay: 4.0
+      bottom_to_bottom:
+        pre_model: base_type
+        post_model: top_type
+        rule: fixed_total_number
+        N: 1000
+        synapse:
+          weight: 3
+          delay: 4.0
+    devices: {}
